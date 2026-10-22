@@ -1,0 +1,41 @@
+package com.example.api.response;
+
+import com.example.types.enums.ResponseCode;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serial;
+import java.io.Serializable;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Response<T> implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 7000723935764546321L;
+
+    private String code;
+    private String info;
+    private T data;
+
+    public static <T> Response<T> success() {
+        return success(null);
+    }
+
+    public static <T> Response<T> success(T data) {
+        return new Response<>(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getInfo(), data);
+    }
+
+    public static <T> Response<T> failure(ResponseCode responseCode) {
+        return failure(responseCode.getCode(), responseCode.getInfo());
+    }
+
+    public static <T> Response<T> failure(String code, String info) {
+        return new Response<>(code, info, null);
+    }
+
+}

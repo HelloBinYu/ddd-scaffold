@@ -1,0 +1,18 @@
+# 开发环境；默认连接 docs/dev-ops/docker-compose-environment.yml 启动的本地 MySQL 与 Redis
+spring:
+  datasource:
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:123456}
+    url: jdbc:mysql://${DB_HOST:127.0.0.1}:${DB_PORT:13306}/ddd_scaffold?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+
+# Redis（Redisson）
+redis:
+  sdk:
+    config:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:16379}
+      password: ${REDIS_PASSWORD:}
+
+logging:
+  level:
+    root: info

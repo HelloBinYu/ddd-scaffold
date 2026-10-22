@@ -1,0 +1,28 @@
+# 校验 init.sh 初始化后的项目可以正常构建；执行 init.sh 后此文件会被删除
+name: Template Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  init-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: Init project from template
+        run: |
+          cp -r . /tmp/generated
+          cd /tmp/generated
+          ./init.sh cn.demo.order order-center
+          test -f order-center-app/src/main/java/cn/demo/order/Application.java
+          ! grep -rn --exclude-dir=.git -e 'com\.example' -e 'ddd_scaffold' .
+      - name: Build generated project
+        working-directory: /tmp/generated
+        run: ./mvnw -B verify

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-config.dtd">
+<!-- 文档：https://mybatis.org/mybatis-3/zh_CN/configuration.html -->
+<configuration>
+    <settings>
+        <!-- 下划线字段自动映射为驼峰属性，如 create_time -> createTime -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+</configuration>

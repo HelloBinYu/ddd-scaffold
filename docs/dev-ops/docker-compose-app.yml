@@ -1,0 +1,34 @@
+# 应用部署；需先执行 ddd-scaffold-app/build.sh 构建镜像，并启动 docker-compose-environment.yml
+# 执行：docker compose -f docker-compose-app.yml up -d
+name: ddd-scaffold-app
+
+services:
+  ddd-scaffold-app:
+    image: ddd-scaffold-app:1.0.0-SNAPSHOT
+    container_name: ddd-scaffold-app
+    restart: on-failure
+    ports:
+      - "8091:8091"
+    environment:
+      - TZ=Asia/Shanghai
+      - SERVER_PORT=8091
+      - SPRING_PROFILES_ACTIVE=prod
+      - JAVA_OPTS=-Xms512m -Xmx512m
+      - DB_URL=jdbc:mysql://mysql:3306/ddd_scaffold?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+      - DB_USERNAME=root
+      - DB_PASSWORD=123456
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - ./log:/data/log
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - ddd-scaffold-network
+
+networks:
+  ddd-scaffold-network:
+    external: true

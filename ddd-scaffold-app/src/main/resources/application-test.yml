@@ -1,0 +1,19 @@
+# 测试环境；数据库、Redis 连接信息必须通过环境变量 DB_URL、DB_USERNAME、DB_PASSWORD、REDIS_HOST 等注入
+spring:
+  datasource:
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    url: ${DB_URL}
+
+# Redis（Redisson）
+redis:
+  sdk:
+    config:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      lazy-initialization: false   # 启动时即连接 Redis，配置错误或 Redis 不可用时启动失败
+
+logging:
+  level:
+    root: info

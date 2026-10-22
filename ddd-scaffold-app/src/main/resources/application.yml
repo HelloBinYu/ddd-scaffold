@@ -1,0 +1,56 @@
+# 公共配置；环境差异配置放在 application-{profile}.yml 中
+# 切换环境：启动参数 --spring.profiles.active=prod 或环境变量 SPRING_PROFILES_ACTIVE=prod
+server:
+  port: 8091
+
+spring:
+  application:
+    name: ddd-scaffold
+  profiles:
+    active: dev
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: ddd-scaffold-hikari
+      minimum-idle: 10          # 最小空闲连接数量
+      maximum-pool-size: 20     # 连接池最大连接数，默认是10
+      idle-timeout: 180000      # 空闲连接存活最大时间，默认600000（10分钟）
+      max-lifetime: 1800000     # 连接最长生命周期，默认1800000即30分钟
+      connection-timeout: 30000 # 获取连接超时时间，默认30秒
+
+# Redis（Redisson）；连接地址见 application-{profile}.yml，配置类见 config.RedisClientConfigProperties
+redis:
+  sdk:
+    config:
+      database: 0
+      pool-size: 64
+      min-idle-size: 10
+      idle-timeout: 10000
+      connect-timeout: 10000
+      timeout: 3000
+      retry-attempts: 3
+      ping-interval: 30000
+      keep-alive: true
+      lazy-initialization: true   # 延迟连接；启动时不连 Redis，首次执行命令时才建立连接
+
+# MyBatis；DAO 接口在 infrastructure 模块 dao 包下（@Mapper），SQL 写在 mybatis/mapper/*.xml
+mybatis:
+  mapper-locations: classpath:/mybatis/mapper/*.xml
+  config-location: classpath:/mybatis/config/mybatis-config.xml
+
+# 线程池配置
+thread:
+  pool:
+    executor:
+      config:
+        core-pool-size: 20
+        max-pool-size: 50
+        keep-alive-time: 60
+        block-queue-size: 5000
+        thread-name-prefix: biz-pool-
+        policy: CallerRunsPolicy
+
+# 日志；文件输出目录，见 logback-spring.xml
+logging:
+  file:
+    path: ./data/log

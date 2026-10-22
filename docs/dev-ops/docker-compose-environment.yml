@@ -1,0 +1,87 @@
+# 基础环境：MySQL、Redis 及其管理后台
+# 执行：docker compose -f docker-compose-environment.yml up -d
+# 国内拉取镜像慢可使用 docker-compose-environment-aliyun.yml
+name: ddd-scaffold-environment
+
+services:
+  mysql:
+    image: mysql:8.0.32
+    container_name: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: 123456
+    ports:
+      - "13306:3306"
+    volumes:
+      - ./mysql/my.cnf:/etc/mysql/conf.d/mysql.cnf:ro
+      - ./mysql/sql:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 15s
+    networks:
+      - ddd-scaffold-network
+
+  # phpmyadmin https://hub.docker.com/_/phpmyadmin  访问 http://127.0.0.1:8899 账密 root/123456
+  phpmyadmin:
+    image: phpmyadmin:5.2.1
+    container_name: phpmyadmin
+    hostname: phpmyadmin
+    ports:
+      - "8899:80"
+    environment:
+      - PMA_HOST=mysql
+      - PMA_PORT=3306
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - ddd-scaffold-network
+
+  redis:
+    image: redis:6.2
+    container_name: redis
+    restart: always
+    hostname: redis
+    ports:
+      - "16379:6379"
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - ddd-scaffold-network
+
+  # RedisAdmin https://github.com/joeferner/redis-commander  访问 http://127.0.0.1:8081 账密 admin/admin
+  redis-admin:
+    image: spryker/redis-commander:0.8.0
+    container_name: redis-admin
+    hostname: redis-commander
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+      - HTTP_USER=admin
+      - HTTP_PASSWORD=admin
+      - LANG=C.UTF-8
+      - LANGUAGE=C.UTF-8
+      - LC_ALL=C.UTF-8
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - ddd-scaffold-network
+
+networks:
+  ddd-scaffold-network:
+    name: ddd-scaffold-network
+    driver: bridge
